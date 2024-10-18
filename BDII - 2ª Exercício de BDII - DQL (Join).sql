@@ -1,24 +1,29 @@
+-- RELATÓRIO 1 (Não consguir)
 SELECT 
-    nome AS `Nome Empregado`, 
-    cpf AS `CPF Empregado`, 
-    dataAdm AS `Data Admissão`, 
-    salario AS `Salário`, 
-    Departamento_idDepartamento AS `Departamento`, 
-	numero AS `Número de Telefone`
+    e.nome AS 'Nome Empregado',
+    e.cpf AS 'CPF Empregado',
+    e.dataAdm AS 'Data Admissão',
+    e.salario AS 'Salário',
+    d.nome AS 'Departamento',
+    t.numero AS 'Número de Telefone'
 FROM 
-    petshop.Empregado
+    petshop.Empregado e
+JOIN 
+    petshop.Departamento d ON e.Departamento_idDepartamento = d.idDepartamento
+LEFT JOIN 
+    petshop.Telefone t ON e.cpf = t.Empregado_cpf
 WHERE 
-    dataAdm BETWEEN '2019-01-01' AND '2022-03-31'
+    e.dataAdm BETWEEN '2019-01-01' AND '2022-03-31'
 ORDER BY 
-    dataAdm DESC;
+    e.dataAdm DESC;
 
 
-
+-- RELATÓRIO 2
 SELECT 
     e.nome AS `Nome Empregado`, 
     e.cpf AS `CPF Empregado`, 
     e.dataAdm AS `Data Admissão`, 
-    e.salario AS `Salário`, 
+    concat('R$ ', format(e.salario, 2, 'de_DE')) AS "Salário",
     e.Departamento_idDepartamento AS `Departamento`, 
     e.email AS `Número de Telefone`
 FROM 
@@ -29,7 +34,7 @@ ORDER BY
     e.nome ASC;
     
     
-    
+-- RELATÓRIO 3
     SELECT 
     d.nome AS `Departamento`, 
     COUNT(e.cpf) AS `Quantidade de Empregados`, 
@@ -45,6 +50,7 @@ ORDER BY
     d.nome ASC;
 
 
+-- RETLATÓRIO 4
 SELECT 
     e.nome AS `Nome Empregado`, 
     e.cpf AS `CPF Empregado`, 
@@ -63,14 +69,15 @@ ORDER BY
     `Quantidade Vendas` DESC;
 
 
+-- RELATÓRIO 5
 SELECT 
     e.nome AS 'Nome Empregado',
     e.cpf AS 'CPF Empregado',
     e.sexo AS 'Sexo',
     e.salario AS 'Salário',
-    COUNT(v.idVenda) AS 'Quantidade Vendas com Serviço',
-    SUM(isv.valor * isv.quantidade) AS 'Total Valor Vendido com Serviço',
-    SUM(v.comissao) AS 'Total Comissão das Vendas com Serviço'
+    COUNT(v.idVenda) AS 'Quantidade Vendas com Serviço', 
+	CONCAT('R$ ', format(   SUM(isv.valor * isv.quantidade) , 2, 'de_DE')) AS 'Total Valor Vendido com Serviço',
+    CONCAT('R$ ', format(   SUM(v.comissao)  , 2, 'de_DE')) AS 'Total Comissão das Vendas com Serviço'
 FROM 
     Empregado e
 JOIN 
@@ -83,12 +90,13 @@ ORDER BY
     `Quantidade Vendas com Serviço` DESC;
 
 
+-- RELATÓRIO 6
 SELECT
     p.nome AS 'Nome do Pet',
     v.data AS 'Data do Serviço',
     s.nome AS 'Nome do Serviço',
     isv.quantidade AS 'Quantidade',
-    isv.valor AS 'Valor',
+    concat('R$ ', format(isv.valor, 2, 'de_DE')) "Valor",
     e.nome AS 'Empregado que realizou o Serviço'
 FROM
     itensServico isv
@@ -104,12 +112,12 @@ ORDER BY
     v.data DESC;
     
     
-    
+    -- RELATÓRIO 7
     SELECT
     v.data AS 'Data da Venda',
-    v.valor AS 'Valor',
-    v.desconto AS 'Desconto',
-    (v.valor - IFNULL(v.desconto, 0)) AS 'Valor Final',
+    concat('R$ ', format(v.valor, 2, 'de_DE')) "Valor",
+    concat('R$ ', format(v.desconto, 2, 'de_DE')) AS 'Desconto',
+    concat('R$ ', format(v.valor - IFNULL(v.desconto, 0), 2, 'de_DE')) AS 'Valor Final',
     e.nome AS 'Empregado que realizou a venda'
 FROM
     Venda v
@@ -121,11 +129,11 @@ ORDER BY
     v.data DESC;
 
 
-
+-- RELATÓRIO 8
 SELECT
     s.nome AS "Nome Serviço",
     SUM(its.quantidade) AS "Quant Vendas",
-    SUM(its.valor) AS "Total Valor Vendido"
+	concat('R$ ', format(SUM(its.valor), 2, 'de_DE')) AS "Total Valor Vendido"
 FROM
     itensServico its
 JOIN
@@ -137,11 +145,11 @@ ORDER BY
 LIMIT 10;
 
 
-
+-- RELATÓRIO 9 
 SELECT
     fp.tipo AS `Tipo Forma Pagamento`,
     COUNT(fp.idFormaPgVenda) AS `Quantidade Vendas`,
-    SUM(fp.valorPago) AS `Total Valor Vendido`
+    concat('R$ ', format(SUM(fp.valorPago), 2, 'de_DE')) AS `Total Valor Vendido`
 FROM
     FormaPgVenda fp
 JOIN
@@ -152,11 +160,11 @@ ORDER BY
     `Quantidade Vendas` DESC;
 
 
-
+-- RELATÓIO 10
 SELECT
     DATE(v.data) AS `Data Venda`,
     COUNT(v.idVenda) AS `Quantidade de Vendas`,
-    SUM(v.valor) AS `Valor Total Venda`
+    concat('R$ ', format(SUM(v.valor), 2, 'de_DE')) AS `Valor Total Venda` 
 FROM
     Venda v
 GROUP BY
@@ -165,32 +173,33 @@ ORDER BY
     `Data Venda` DESC;
     
     
-    
-    
-SELECT
+-- RELATÓRIO 11
+SELECT 
     p.nome AS 'Nome Produto',
-    p.valorVenda AS 'Valor Produto',
-    c.nome AS 'Categoria do Produto',
+    concat('R$ ', format( p.valorVenda, 2, 'de_DE')) AS 'Valor Produto',
+    p.marca AS 'Categoria do Produto', -- Supondo que 'marca' representa a categoria
     f.nome AS 'Nome Fornecedor',
     f.email AS 'Email Fornecedor',
     t.numero AS 'Telefone Fornecedor'
-FROM
+FROM 
     petshop.Produtos p
-JOIN
-    petshop.Categorias c ON p.idCategoria = c.idCategoria -- Supondo que exista uma tabela de Categorias
-JOIN
-    petshop.Fornecedor f ON p.idFornecedor = f.cpf_cnpj 
-LEFT JOIN
+JOIN 
+    petshop.ItensCompra ic ON p.idProduto = ic.Produtos_idProduto
+JOIN 
+    petshop.Compras c ON ic.Compras_idCompra = c.idCompra
+JOIN 
+    petshop.Fornecedor f ON c.Fornecedor_cpf_cnpj = f.cpf_cnpj
+LEFT JOIN 
     petshop.Telefone t ON f.cpf_cnpj = t.Fornecedor_cpf_cnpj
-ORDER BY
-    p.nome ASC;
-
+ORDER BY 
+    p.nome;
     
     
+-- RELATÓRIO 12
    SELECT
     p.nome AS 'Nome Produto',
-    SUM(iv.quantidade) AS 'Quantidade (Total) Vendas',
-    SUM(iv.valor) AS 'Valor Total Recebido pela Venda do Produto'
+     CAST(SUM(iv.quantidade) AS UNSIGNED) AS 'Quantidade (Total) Vendas',
+	concat('R$ ', format(SUM(iv.valor), 2, 'de_DE')) AS 'Valor Total Recebido pela Venda do Produto'
 FROM
     petshop.Produtos p
 JOIN
